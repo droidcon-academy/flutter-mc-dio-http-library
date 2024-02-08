@@ -1,24 +1,24 @@
 import 'package:flutter/material.dart';
-import '../../models/social/post.dart';
-import '../../models/social/user.dart';
-import '../../services/social_api.dart';
-import 'edit_post.dart';
-import 'create_post.dart';
+import '../../services/auth_api.dart';
 
-class PostList extends StatelessWidget {
-  final User userData; // Accept in constructor
-  const PostList({super.key, required this.userData});
-  
+class ArticleList extends StatefulWidget {
+  const ArticleList({super.key});
+
+  @override
+  State<ArticleList> createState() => _ArticleListState();
+}
+
+class _ArticleListState extends State<ArticleList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("${userData.name}'s Posts"), 
+        title: const Text("Articles"), 
         centerTitle: true,
         elevation: 1,
       ),
       body: FutureBuilder(
-          future: SocialApi().getPostsByUserId(userData.id),
+          future: AuthApi().fetchArticles(),
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(
@@ -39,7 +39,6 @@ class PostList extends StatelessWidget {
             return ListView.builder(
                 itemCount: snapshot.data.length,
                 itemBuilder: (context, index) {
-                  Post post = snapshot.data[index];
                   return Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Card(
@@ -54,28 +53,18 @@ class PostList extends StatelessWidget {
                               children: [
                                 Flexible(
                                   child: Text(
-                                    post.title,
+                                    snapshot.data['result'][index]['title'],
                                     style: const TextStyle(
                                         fontSize: 18.0,
                                         fontWeight: FontWeight.bold,
                                         color: Colors.teal),
                                   ),
                                 ),
-                                IconButton(
-                                    onPressed: () {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) => EditPost(
-                                                    postData: post,
-                                                  )));
-                                    },
-                                    icon: const Icon(Icons.edit))
                               ],
                             ),
                             const SizedBox(height: 8.0),
                             Text(
-                              post.body,
+                              snapshot.data['result'][index]['body'],
                               style: const TextStyle(fontSize: 16.0),
                             ),
                           ],
@@ -85,16 +74,12 @@ class PostList extends StatelessWidget {
                   );
                 });
           }),
-      floatingActionButton: FloatingActionButton(
-          child: const Icon(Icons.add),
-          onPressed: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => CreatePost(
-                          userData: userData,
-                        )));
-          }),
+      // floatingActionButton: FloatingActionButton(
+      //     child: const Icon(Icons.person),
+      //     onPressed: ()  {
+      //       
+      //     }
+      //     ),
     );
   }
 }

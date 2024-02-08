@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
-import '../utils/custom_exceptions.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../utils/custom_exceptions.dart';
 
 class AuthApi {
   final Dio _dio = Dio(BaseOptions(
